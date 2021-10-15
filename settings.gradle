@@ -1,0 +1,3 @@
+rootProject.name = 'anime-scraper'
+include 'anime-scraper-api'
+include 'anime-scraper-app-example'
