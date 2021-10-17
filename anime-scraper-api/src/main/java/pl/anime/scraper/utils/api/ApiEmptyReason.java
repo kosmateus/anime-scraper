@@ -29,11 +29,15 @@ public class ApiEmptyReason {
         return new ApiEmptyReason(ApiEntityState.BAD_REQUEST_PARAMETERS, details);
     }
 
-    public static ApiEmptyReason badResponseFromExternalService(ApiErrorDetails details){
+    public static ApiEmptyReason badResponseFromExternalService(ApiErrorDetails details) {
         return new ApiEmptyReason(ApiEntityState.BAD_RESPONSE_FROM_EXTERNAL_SERVICE, details);
     }
 
-    public static ApiEmptyReason forbidden(ApiErrorDetails details){
+    public static ApiEmptyReason forbidden(ApiErrorDetails details) {
         return new ApiEmptyReason(ApiEntityState.FORBIDDEN, details);
+    }
+
+    public static ApiEmptyReason unknown(ApiErrorDetails details) {
+        return new ApiEmptyReason(ApiEntityState.UNKNOWN, details);
     }
 }

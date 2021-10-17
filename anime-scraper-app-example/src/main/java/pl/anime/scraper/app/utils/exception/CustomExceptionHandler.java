@@ -1,5 +1,7 @@
 package pl.anime.scraper.app.utils.exception;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,6 +11,7 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.spring.web.advice.ProblemHandling;
 import pl.anime.scraper.utils.api.ApiEmptyReason;
+import pl.anime.scraper.utils.api.ApiEntityState;
 
 @ControllerAdvice
 public class CustomExceptionHandler implements ProblemHandling {
@@ -23,6 +26,7 @@ public class CustomExceptionHandler implements ProblemHandling {
         var problem = Problem.builder()
                 .withTitle(DISCORD_TOKEN_NOT_PROVIDED)
                 .withDetail(exception.getMessage())
+                .with("timestamp", LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
                 .withStatus(Status.FORBIDDEN)
                 .build();
 
@@ -38,6 +42,7 @@ public class CustomExceptionHandler implements ProblemHandling {
                 .withTitle(errorDetails.getErrorName())
                 .withDetail(errorDetails.getMessage())
                 .with("errorCode", errorDetails.getCode().getCode())
+                .with("timestamp", LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
                 .withStatus(getStatusForApiHandlerException(emptyReason));
 
         if (externalRequestErrorDetails != null) {
@@ -59,8 +64,11 @@ public class CustomExceptionHandler implements ProblemHandling {
     private Status getStatusForApiHandlerException(ApiEmptyReason apiEmptyReason) {
         var errorName = apiEmptyReason.getErrorDetails().getErrorName();
         var externalRequestErrorDetails = apiEmptyReason.getErrorDetails().getExternalRequestErrorDetails();
+        var state = apiEmptyReason.getState();
         if (INVALID__REQUEST_PARAMETER.equalsIgnoreCase(errorName)) {
             return Status.BAD_REQUEST;
+        } else if (state == ApiEntityState.FORBIDDEN) {
+            return Status.FORBIDDEN;
         } else {
             return externalRequestErrorDetails != null ? Status.BAD_GATEWAY : Status.INTERNAL_SERVER_ERROR;
         }

@@ -35,6 +35,12 @@ public class ApiParserUtil {
                         ApiEmptyReason.apiOutdated(
                                 ApiErrorDetails.outdated(e.getErrorCode(), e.getMessage())
                         ));
+            } catch (Exception e) {
+                return APIHandler.empty(
+                        ApiEmptyReason.unknown(
+                                ApiErrorDetails.builder().withErrorName("Unknown error").withMessage(e.getMessage())
+                                        .build()
+                        ));
             }
 
         }
@@ -58,7 +64,7 @@ public class ApiParserUtil {
             ErrorCode errorCodeForGettingDocument,
             ErrorCode errorCodeForUserUnauthorized) {
 
-        if (Boolean.FALSE.equals(isLogin.get())) {
+        if (Boolean.TRUE.equals(isLogin.get())) {
             return getAndParse(documentProvided, parser, errorCodeForGettingDocument);
         }
         return APIHandler.empty(

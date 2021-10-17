@@ -1,31 +1,29 @@
 package pl.anime.scraper.domain.api.shinden.series.json;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Date;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import pl.anime.scraper.utils.json.DoubleZeroDecimalSerializer;
+import pl.anime.scraper.utils.json.DateWithoutMillisecondsSerializer;
 
 @Getter
 @Setter
-public class ShindenSeriesEpisodeOverview {
+public class ShindenSeriesEpisodeSource {
 
-    @JsonInclude(Include.NON_EMPTY)
     private Long id;
     @JsonInclude(Include.NON_EMPTY)
-    @JsonSerialize(using = DoubleZeroDecimalSerializer.class)
-    private Double number;
+    private String service;
     @JsonInclude(Include.NON_EMPTY)
-    private String title;
-    private boolean online;
+    private String quality;
     @JsonInclude(Include.NON_EMPTY)
-    private List<String> languages;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    private String audio;
     @JsonInclude(Include.NON_EMPTY)
-    private Date releaseDate;
-
+    private String subtitles;
+    @JsonInclude(Include.NON_EMPTY)
+    @JsonSerialize(using = DateWithoutMillisecondsSerializer.class)
+    private Date added;
+    @JsonInclude(Include.NON_EMPTY)
+    private String url;
 }

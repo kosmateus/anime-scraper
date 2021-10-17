@@ -7,9 +7,11 @@ public class ShindenConstants {
 
     public static final Long DISCORD_EPISODES_CHANNEL_ID = 427284898873606146L;
     public static final String SHINDEN_URL = "https://shinden.pl";
+    public static final String SHINDEN_API_URL = "https://api4.shinden.pl/xhr/%s/%s?auth=%s";
 
     public static final Map<String, String> LOGIN_HEADERS = new HashMap<>();
     public static final Map<String, String> LOGIN_REDIRECT__HEADERS = new HashMap<>();
+    public static final Map<String, String> SOURCE_API_HEADERS = new HashMap<>();
 
     static {
         LOGIN_HEADERS.put("authority", "shinden.pl");
@@ -34,5 +36,11 @@ public class ShindenConstants {
         LOGIN_REDIRECT__HEADERS.put("upgrade-insecure-requests", "1");
         LOGIN_REDIRECT__HEADERS.put("user-agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.75 Safari/537.36");
+        SOURCE_API_HEADERS.put("Accept", "*/*");
+        SOURCE_API_HEADERS.put("Origin", "https://shinden.pl");
+        SOURCE_API_HEADERS.put("User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.46 Safari/537.36");
+        SOURCE_API_HEADERS.put("DNT", "1");
+
     }
 }

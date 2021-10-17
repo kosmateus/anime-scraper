@@ -1,4 +1,4 @@
-package pl.anime.scraper.app.view.shinden.episodes;
+package pl.anime.scraper.app.view.shinden.series;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.anime.scraper.api.ShindenAPI;
 import pl.anime.scraper.app.config.ShindenRestContestants;
-import pl.anime.scraper.app.utils.exception.ApiHandlerException;
 import pl.anime.scraper.app.utils.exception.DiscordTokenNotProvidedException;
+import pl.anime.scraper.app.utils.view.ResponseEntityUtils;
 import pl.anime.scraper.domain.api.shinden.dto.episodes.ShindenRecentlyAddedEpisode;
 import pl.anime.scraper.domain.api.shinden.dto.episodes.ShindenRecentlyAddedSeriesEpisodes;
 import pl.anime.scraper.utils.api.APIHandler;
@@ -35,27 +35,14 @@ public class ShindenLatestEpisodesController {
     public ResponseEntity<List<ShindenRecentlyAddedEpisode>> getLatestMessages(
             @RequestParam(value = "limit", defaultValue = "50", required = false) int limit) {
 
-        var latestAddedEpisodes = getLatestEpisodes(limit);
-
-        if (latestAddedEpisodes.isPresent()) {
-            return ResponseEntity.ok(latestAddedEpisodes.getResult());
-        } else if (latestAddedEpisodes.isOk()) {
-            return ResponseEntity.noContent().build();
-        }
-        throw new ApiHandlerException(latestAddedEpisodes.getEmptyReason());
+        return ResponseEntityUtils.ofApi(() -> getLatestEpisodes(limit));
     }
 
     @GetMapping(value = "/latest", params = "grouped=true")
     public ResponseEntity<List<ShindenRecentlyAddedSeriesEpisodes>> getLatestEpisodesGroupByTvSeries(
             @RequestParam(value = "limit", defaultValue = "50", required = false) int limit) {
-        var latestAddedEpisodes = getGroupedLatestEpisodes(limit);
 
-        if (latestAddedEpisodes.isPresent()) {
-            return ResponseEntity.ok(latestAddedEpisodes.getResult());
-        } else if (latestAddedEpisodes.isOk()) {
-            return ResponseEntity.noContent().build();
-        }
-        throw new ApiHandlerException(latestAddedEpisodes.getEmptyReason());
+        return ResponseEntityUtils.ofApi(() -> getGroupedLatestEpisodes(limit));
     }
 
     private APIHandler<List<ShindenRecentlyAddedEpisode>> getLatestEpisodes(int limit) {

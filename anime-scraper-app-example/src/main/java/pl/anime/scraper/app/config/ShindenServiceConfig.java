@@ -14,6 +14,7 @@ public class ShindenServiceConfig {
 
     @Bean
     public ShindenAPI shindenService() {
-        return ShindenAPI.with(shindenLoginDetailsService);
+        return ShindenAPI.with(shindenLoginDetailsService, 50);
     }
+
 }
