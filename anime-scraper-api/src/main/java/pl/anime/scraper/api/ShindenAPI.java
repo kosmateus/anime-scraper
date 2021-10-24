@@ -7,6 +7,8 @@ import pl.anime.scraper.domain.api.shinden.dto.episodes.ShindenRecentlyAddedSeri
 import pl.anime.scraper.domain.api.shinden.login.LoginRequestData;
 import pl.anime.scraper.domain.api.shinden.login.ShindenSessionLoginDetailsService;
 import pl.anime.scraper.domain.api.shinden.login.json.ShindenLoginResult;
+import pl.anime.scraper.domain.api.shinden.search.ShindenSearchParameters;
+import pl.anime.scraper.domain.api.shinden.search.json.ShindenSearchResult;
 import pl.anime.scraper.domain.api.shinden.series.json.ShindenSeries;
 import pl.anime.scraper.domain.api.shinden.series.json.ShindenSeriesCharactersAndCrew;
 import pl.anime.scraper.domain.api.shinden.series.json.ShindenSeriesEpisodeOverview;
@@ -73,5 +75,9 @@ public class ShindenAPI {
 
     public APIHandler<List<ShindenSeriesEpisodeSource>> findSeriesEpisodeSources(String seriesId, Long episodeId) {
         return shindenService.findSeriesEpisodeSources(seriesId, episodeId);
+    }
+
+    public APIHandler<ShindenSearchResult> findSeries(ShindenSearchParameters searchParameters) {
+        return shindenService.searchSeries(searchParameters);
     }
 }

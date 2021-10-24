@@ -106,4 +106,13 @@ public class ShindenJsoupClient {
                         .method(Method.GET)
         );
     }
+
+    public static ResponseHandler<Document> getSearchPage(String queryParams, Map<String, String> cookies) {
+        return JsoupUtils.executeConnection(
+                () -> Jsoup.connect(ShindenConstants.SHINDEN_URL + "/series?" + queryParams)
+                        .cookies(cookies)
+                        .header("accept-language", "en-US,en;q=0.9,pl-PL;q=0.8,pl;q=0.7,jp-JP;q=0.6,jp;q=0.5")
+                        .method(Method.GET)
+        );
+    }
 }

@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jsoup.nodes.Document;
@@ -33,6 +32,7 @@ import pl.anime.scraper.domain.api.shinden.series.json.ShindenSeriesInfo;
 import pl.anime.scraper.domain.api.shinden.series.json.ShindenSeriesPerson;
 import pl.anime.scraper.domain.api.shinden.series.json.ShindenSeriesStatistics;
 import pl.anime.scraper.domain.api.shinden.series.json.ShindenSeriesTag;
+import pl.anime.scraper.domain.api.shinden.utils.ShindenUtils;
 import pl.anime.scraper.utils.collections.MapUtils;
 import pl.anime.scraper.utils.exception.JsoupParserException;
 
@@ -146,7 +146,7 @@ class ShindenSeriesParser {
                     var personName = aElement.text();
                     var personNameSplit = personName.split(",");
                     var isOnlyName = personNameSplit.length == 1;
-                    var idAndName = acquireIdAndNameFromHref(aElement.attr("href"));
+                    var idAndName = ShindenUtils.acquireIdAndNameFromHref(aElement.attr("href"));
                     var shindenSeriesPerson = new ShindenSeriesPerson();
                     shindenSeriesPerson.setKey(new ShindenAccessKey(idAndName.getId(), idAndName.getName()));
                     shindenSeriesPerson.setName(isOnlyName ? personName : null);
@@ -192,7 +192,7 @@ class ShindenSeriesParser {
         var characterName = pTxtATagElement.text();
         var splitCharacterName = characterName.split(",");
         var isOnlyName = splitCharacterName.length == 1;
-        var idAndName = acquireIdAndNameFromHref(aTagElement.attr("href"));
+        var idAndName = ShindenUtils.acquireIdAndNameFromHref(aTagElement.attr("href"));
         var shindenCharacter = new ShindenCharacter();
         shindenCharacter.setKey(new ShindenAccessKey(idAndName.getId(), idAndName.getName()));
         shindenCharacter.setSmallImage(ShindenConstants.SHINDEN_URL + imageElement.attr("src"));
@@ -228,16 +228,6 @@ class ShindenSeriesParser {
                 .collect(LinkedHashMap::new, (map, entry) -> map.put(entry.getKey(), entry.getValue()), Map::putAll);
     }
 
-    private static IdAndName acquireIdAndNameFromHref(String href) {
-        var hrefList = Arrays.stream(href.split("/"))
-                .filter(el -> !el.isBlank())
-                .collect(Collectors.toList());
-        var idAndName = new IdAndName();
-        var idAndNames = hrefList.get(1).split("-");
-        idAndName.setId(Long.valueOf(Arrays.asList(idAndNames).get(0)));
-        idAndName.setName(String.join("-", Arrays.asList(idAndNames).subList(1, idAndNames.length)));
-        return idAndName;
-    }
 
     private static List<ShindenRelatedSeries> acquireRelatedSeries(Document document) {
         var figureListElement = document.getElementsByClass("figure-list")
@@ -264,12 +254,13 @@ class ShindenSeriesParser {
                             .stream().findFirst()
                             .orElseThrow(JsoupParserException.of(SeriesErrorCode.NO_RELATED_SERIES_IMAGE));
 
-                    var idAndName = acquireIdAndNameFromHref(aTagTitle.attr("href"));
+                    var idAndName = ShindenUtils.acquireIdAndNameFromHref(aTagTitle.attr("href"));
                     var shindenRelatedSeries = new ShindenRelatedSeries();
                     shindenRelatedSeries.setKey(new ShindenAccessKey(idAndName.getId(), idAndName.getName()));
                     shindenRelatedSeries.setSeriesType(seriesType);
                     shindenRelatedSeries.setSmallImage(ShindenConstants.SHINDEN_URL + imgElement.attr("src"));
-                    shindenRelatedSeries.setImage(ShindenConstants.SHINDEN_URL + imgElement.attr("src").replace("100x100", "225x350"));
+                    shindenRelatedSeries.setImage(
+                            ShindenConstants.SHINDEN_URL + imgElement.attr("src").replace("100x100", "225x350"));
                     shindenRelatedSeries.setRelationType(relationType);
                     shindenRelatedSeries.setTitle(aTagTitle.attr("title").trim());
                     return shindenRelatedSeries;
@@ -394,7 +385,7 @@ class ShindenSeriesParser {
                                         .stream()
                                         .findFirst()
                                         .orElseThrow(JsoupParserException.of(SeriesErrorCode.NO_A_TAG_IN_TAGS));
-                                return createTagFromHtmlATag(aTag);
+                                return ShindenUtils.createTagFromHtmlATag(aTag);
                             })
                             .collect(Collectors.toList());
                     return new SimpleEntry<>(tdElements.get(0).text().trim(), tags);
@@ -452,15 +443,6 @@ class ShindenSeriesParser {
         return result;
     }
 
-    private static ShindenSeriesTag createTagFromHtmlATag(Element aTag) {
-        var tag = new ShindenSeriesTag();
-        var idAndName = acquireIdAndNameFromHref(aTag.attr("href"));
-        tag.setKey(new ShindenAccessKey(idAndName.getId(), idAndName.getName()));
-        tag.setText(aTag.text());
-        tag.setDescription(aTag.attr("title").trim().replaceAll("\n", ""));
-        return tag;
-    }
-
     private static Map<String, Element> createElementsFromDlElement(Element dlElement) {
         var dtElements = dlElement.getElementsByTag("dt");
         var ddElements = dlElement.getElementsByTag("dd");
@@ -501,7 +483,7 @@ class ShindenSeriesParser {
         }
         var aTags = element.getElementsByTag("a");
         return aTags.stream()
-                .map(ShindenSeriesParser::createTagFromHtmlATag)
+                .map(ShindenUtils::createTagFromHtmlATag)
                 .collect(Collectors.toList());
     }
 
@@ -513,14 +495,6 @@ class ShindenSeriesParser {
             return monthYearFormat;
         }
         return yearFormat;
-    }
-
-    @Getter(AccessLevel.PACKAGE)
-    @Setter(AccessLevel.PACKAGE)
-    private static class IdAndName {
-
-        private Long id;
-        private String name;
     }
 
     @Getter(AccessLevel.PACKAGE)
